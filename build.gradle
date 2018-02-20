@@ -1,0 +1,42 @@
+plugins {
+	id 'java'
+	id 'eclipse'
+}
+
+sourceCompatibility = targetCompatibility = '1.9'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testCompile 'junit:junit:4.12'
+}
+
+eclipse {
+	classpath {
+		file {
+			whenMerged {
+				entries.findAll { isSource(it) }.each {
+					System.out.println("SOURCE: "+it.entryAttributes.get('gradle_used_by_scope')); //DEBUG
+				}
+				
+				entries.findAll { isLibrary(it) }.each {
+					System.out.println("LIB: "+it.entryAttributes.get('gradle_used_by_scope')); //DEBUG
+				}
+				
+				entries.findAll { isSource(it) && isTestScope(it) }.each {
+					it.entryAttributes['test'] = 'true'
+				}
+				
+				entries.findAll { isLibrary(it) && isTestScope(it) }.each {
+					it.entryAttributes['test'] = 'true'
+				}
+			}
+		}
+	}
+}
+
+boolean isLibrary(entry) { return entry.properties.kind.equals('lib') }
+boolean isTestScope(entry) { return entry.entryAttributes.get('gradle_used_by_scope').equals('test'); }
+boolean isSource(entry) { return entry.properties.kind.equals('src'); }
