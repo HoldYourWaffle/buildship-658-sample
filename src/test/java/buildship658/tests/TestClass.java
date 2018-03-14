@@ -1,3 +1,5 @@
+package buildship658.tests;
+
 import org.junit.Assert;
 import org.junit.Test;
 
